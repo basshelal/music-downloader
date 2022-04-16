@@ -1,0 +1,42 @@
+# Config for music downloader
+
+# ==================
+# Downloader options
+# ==================
+
+# Output directory where music will be placed
+output-dir: "~/music/"
+
+# Input directory which contains files with the URLs to music
+input-dir:  "./urls/"
+
+# Audio formats to use, allowed formats are: m4a, mp3, flac, wav
+formats:  [ "m4a" ]
+
+# Cookies for each download source, empty string for no cookies file
+cookies:
+  music.youtube.com: "./cookies/youtube-cookies.txt"
+
+# Archives directory to keep track of downloaded music, a directory will be made for each format
+archives-dir: "./archives/"
+
+# Download rate limit in MB/s, 0 for no limit
+rate-limit: 5
+
+# Period between rescan to check for new music in minutes
+rescan-period: 360
+
+# Is file enabled, if true will use a file watcher to check for changes to input-dir
+file-watching-enabled: true
+
+# ===============
+# Storage options
+# ===============
+
+# Backup location(s)
+backup-dirs:
+  - "~/backups/"
+
+# Backup period in minutes
+backup-period: 720
+
