@@ -14,11 +14,11 @@ tasks.test {
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.jvmTarget = "14"
 }
 
-tasks.register<JavaExec>(name="downloader") {
-    mainClass.set("dev.basshelal.musicdownloader.DownloaderKt")
+tasks.register<JavaExec>(name="music-downloader") {
+    mainClass.set("dev.basshelal.musicdownloader.MainKt")
     classpath = sourceSets.main.get().runtimeClasspath
 }
 
@@ -29,4 +29,5 @@ repositories {
 dependencies {
     testImplementation(kotlin("test"))
     implementation("com.charleskorn.kaml:kaml:0.43.0")
+    implementation("com.github.ajalt.clikt:clikt:3.4.1")
 }

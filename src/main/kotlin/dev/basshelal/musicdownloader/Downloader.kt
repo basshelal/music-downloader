@@ -1,16 +1,16 @@
 package dev.basshelal.musicdownloader
 
-import com.charleskorn.kaml.Yaml
-import com.charleskorn.kaml.decodeFromStream
-import java.io.File
+object Downloader {
 
-fun main(args: Array<String>) {
-    println("""Args:
-        |${args.joinToString()}""".trimMargin()
-    )
+    fun start() {
+        val ytdlExec: String = ApplicationConfig.executable
 
-    val config: Config = Yaml.default.decodeFromStream(File("config.yaml").inputStream())
+        println("Starting $ytdlExec")
 
-    println("config: ${config.toString().replace(',', '\n')}")
-
+        ProcessBuilder(ytdlExec, "--version")
+                .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+                .redirectInput(ProcessBuilder.Redirect.INHERIT)
+                .redirectError(ProcessBuilder.Redirect.INHERIT)
+                .start().waitFor()
+    }
 }

@@ -21,10 +21,13 @@ cookies:
 archives-dir: "./archives/"
 
 # Download rate limit in MB/s, 0 for no limit
-rate-limit: 5
+rate-limit: 0
 
 # Period between rescan to check for new music in minutes
 rescan-period: 360
+
+# ytdl executable, this should be recognizable and runnable from a shell
+executable: "yt-dlp"
 
 # Is file enabled, if true will use a file watcher to check for changes to input-dir
 file-watching-enabled: true
@@ -34,9 +37,9 @@ file-watching-enabled: true
 # ===============
 
 # Backup location(s)
-backup-dirs:
-  - "~/backups/"
+#backup-dirs:
+ # - "~/backups/"
 
 # Backup period in minutes
-backup-period: 720
+#backup-period: 720
 
