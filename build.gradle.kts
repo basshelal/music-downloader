@@ -30,4 +30,5 @@ dependencies {
     testImplementation(kotlin("test"))
     implementation("com.charleskorn.kaml:kaml:0.43.0")
     implementation("com.github.ajalt.clikt:clikt:3.4.1")
+    implementation("com.diogonunes:JColor:5.3.1")
 }

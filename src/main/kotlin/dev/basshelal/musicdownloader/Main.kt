@@ -42,4 +42,8 @@ fun main(args: Array<String>) {
 
     Downloader.start()
 
+    Runtime.getRuntime().addShutdownHook(Thread {
+        Downloader.stop()
+    })
+
 }

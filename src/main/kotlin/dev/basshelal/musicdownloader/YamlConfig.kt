@@ -1,9 +1,6 @@
 package dev.basshelal.musicdownloader
 
-import com.github.ajalt.clikt.completion.CompletionCandidates
-import com.github.ajalt.clikt.completion.completionOption
 import com.github.ajalt.clikt.core.CliktCommand
-import com.github.ajalt.clikt.parameters.groups.groupChoice
 import com.github.ajalt.clikt.parameters.options.convert
 import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.option
@@ -12,10 +9,11 @@ import com.github.ajalt.clikt.parameters.types.int
 import kotlinx.serialization.SerialName
 
 interface Config {
+    val strictMode: Boolean?
     val outputDir: String?
     val inputDir: String?
     val formats: List<String>?
-    val cookies: Map<String, String>?
+    val cookies: String?
     val archivesDir: String?
     val rateLimit: Int?
     val rescanPeriod: Int?
@@ -24,6 +22,8 @@ interface Config {
 
 @kotlinx.serialization.Serializable
 data class YamlConfig(
+        @SerialName("strict-mode")
+        override val strictMode: Boolean,
         @SerialName("output-dir")
         override val outputDir: String,
         @SerialName("input-dir")
@@ -31,7 +31,7 @@ data class YamlConfig(
         @SerialName("formats")
         override val formats: List<String>,
         @SerialName("cookies")
-        override val cookies: Map<String, String>,
+        override val cookies:String,
         @SerialName("archives-dir")
         override val archivesDir: String,
         @SerialName("rate-limit")
@@ -57,6 +57,10 @@ class CommandLineConfig : Config,
             help = "Location of yaml config file, defaults to ./config.yaml",
     ).default("./config.yaml")
 
+    override val strictMode: Boolean? by option(
+            names = arrayOf("--strict-mode"),
+    ).convert { java.lang.Boolean.valueOf(it) }
+
     override val outputDir: String? by option(
             names = arrayOf("--output-dir", "-o"),
             help = "Directory where music will be downloaded",
@@ -72,8 +76,7 @@ class CommandLineConfig : Config,
             help = "Formats separated by commas (,), supported formats are m4a,wav,mp3,flac",
     ).split(",")
 
-    override val cookies: Map<String, String>? by option(names = arrayOf("--cookies", "-c"))
-            .convert { it.split(",").associate { "" to it } }
+    override val cookies: String? by option(names = arrayOf("--cookies", "-c"))
 
     override val archivesDir: String? by option(names = arrayOf("--archives-dir", "-a"))
 

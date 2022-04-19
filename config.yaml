@@ -1,11 +1,19 @@
 # Config for music downloader
 
+# ===============
+# General options
+# ===============
+
+# if false, then music downloader will automatically try to fix invalid config options,
+# such as creating missing directories, fixing bad numbers or using default values for missing options
+strict-mode: false
+
 # ==================
 # Downloader options
 # ==================
 
 # Output directory where music will be placed
-output-dir: "~/music/"
+output-dir: "/home/bassam/music/"
 
 # Input directory which contains files with the URLs to music
 input-dir:  "./urls/"
@@ -14,8 +22,7 @@ input-dir:  "./urls/"
 formats:  [ "m4a" ]
 
 # Cookies for each download source, empty string for no cookies file
-cookies:
-  music.youtube.com: "./cookies/youtube-cookies.txt"
+cookies: "./cookies/youtube-cookies.txt"
 
 # Archives directory to keep track of downloaded music, a directory will be made for each format
 archives-dir: "./archives/"
@@ -37,9 +44,9 @@ file-watching-enabled: true
 # ===============
 
 # Backup location(s)
-#backup-dirs:
- # - "~/backups/"
+backup-dirs:
+  - "~/backups/"
 
 # Backup period in minutes
-#backup-period: 720
+backup-period: 720
 
