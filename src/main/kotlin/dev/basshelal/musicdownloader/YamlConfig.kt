@@ -31,7 +31,7 @@ data class YamlConfig(
         @SerialName("formats")
         override val formats: List<String>,
         @SerialName("cookies")
-        override val cookies:String,
+        override val cookies: String,
         @SerialName("archives-dir")
         override val archivesDir: String,
         @SerialName("rate-limit")
@@ -52,10 +52,10 @@ class CommandLineConfig : Config,
                 """.trimMargin(),
         ) {
 
-    val configFile: String by option(
-            names = arrayOf("--config"),
+    val configFilePath: String by option(
+            names = arrayOf("--config", "-c"),
             help = "Location of yaml config file, defaults to ./config.yaml",
-    ).default("./config.yaml")
+    ).default(Defaults.configFilePath)
 
     override val strictMode: Boolean? by option(
             names = arrayOf("--strict-mode"),
@@ -76,11 +76,11 @@ class CommandLineConfig : Config,
             help = "Formats separated by commas (,), supported formats are m4a,wav,mp3,flac",
     ).split(",")
 
-    override val cookies: String? by option(names = arrayOf("--cookies", "-c"))
+    override val cookies: String? by option(names = arrayOf("--cookies", "-C"))
 
     override val archivesDir: String? by option(names = arrayOf("--archives-dir", "-a"))
 
-    override val rateLimit: Int? by option(names = arrayOf("--rate-limit")).int()
+    override val rateLimit: Int? by option(names = arrayOf("--rate-limit", "--limit", "-l")).int()
 
     override val rescanPeriod: Int? by option(names = arrayOf("--rescan-period")).int()
 

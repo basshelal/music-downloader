@@ -1,5 +1,12 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package dev.basshelal.musicdownloader
 
+import com.charleskorn.kaml.Yaml
+import com.charleskorn.kaml.YamlConfiguration
+import com.charleskorn.kaml.YamlException
+import com.charleskorn.kaml.decodeFromStream
+import com.github.ajalt.clikt.core.PrintHelpMessage
 import java.io.File
 import java.io.IOException
 
@@ -36,12 +43,31 @@ object ApplicationConfig : Config {
     override var executable: String by LateInit()
         private set
 
-    fun initialize(configFile: File = this.configFile,
-                   yamlConfig: YamlConfig = this.yamlConfig,
-                   commandLineConfig: CommandLineConfig = this.commandLineConfig) {
-        this.configFile = configFile
-        this.yamlConfig = yamlConfig
-        this.commandLineConfig = commandLineConfig
+    fun initialize(args: Array<String>) {
+        this.commandLineConfig = CommandLineConfig().also {
+            try {
+                it.parse(args)
+            } catch (e: PrintHelpMessage) {
+                println(it.getFormattedHelp())
+                exit()
+            }
+        }
+
+        this.configFile = File(commandLineConfig.configFilePath).also {
+            if (!it.exists() || !it.isFile) {
+                printErr("File ${commandLineConfig.configFilePath} does not exist")
+                exit(1)
+            }
+        }
+
+        this.yamlConfig = try {
+            Yaml(configuration = YamlConfiguration(strictMode = false))
+                    .decodeFromStream(configFile.inputStream())
+        } catch (e: YamlException) {
+            e.printStackTrace()
+            printErr("An error occurred trying to read the config file located at ${configFile.absolutePath}, exiting")
+            exit(1)
+        }
 
         this.strictMode = commandLineConfig.strictMode ?: yamlConfig.strictMode
         this.outputDir = commandLineConfig.outputDir ?: yamlConfig.outputDir
@@ -56,7 +82,7 @@ object ApplicationConfig : Config {
         this.verifyConfig()
     }
 
-    fun verifyConfig() {
+    private inline fun verifyConfig() {
         var errors = 0
         if (!File(outputDir).isDirectory) {
             if (!strictMode) {
@@ -97,13 +123,13 @@ object ApplicationConfig : Config {
                 errors++
             }
         }
-        if (formats.any { it !in listOf("m4a", "wav", "mp3", "flac") }) {
+        if (formats.any { it !in Defaults.supportedFormats }) {
             if (!strictMode) {
-                println("Formats contains unknown format(s):\n${formats.filter { it !in listOf("m4a", "wav", "mp3", "flac") }}" +
+                println("Formats contains unknown format(s):\n${formats.filter { it !in Defaults.supportedFormats }}" +
                         "\n\tSupported formats are m4a,wav,mp3,flac\n\tRemoving unknown formats")
                 formats = formats.filter { it in listOf("m4a", "wav", "mp3", "flac") }.distinct()
             } else {
-                printErr("Formats contains unknown format(s):\n${formats.filter { it !in listOf("m4a", "wav", "mp3", "flac") }}" +
+                printErr("Formats contains unknown format(s):\n${formats.filter { it !in Defaults.supportedFormats }}" +
                         "\n\tSupported formats are m4a,wav,mp3,flac")
                 errors++
             }
@@ -118,7 +144,7 @@ object ApplicationConfig : Config {
             }
         }
         if (rescanPeriod < 0) {
-            if(!strictMode) {
+            if (!strictMode) {
                 printErr("Rescan period: $rescanPeriod is less than 0, setting to default: 360")
                 rescanPeriod = 360
             } else {
@@ -128,7 +154,7 @@ object ApplicationConfig : Config {
         }
 
         try {
-            ProcessBuilder(executable, "--version")
+            ProcessBuilder(executable)
                     .redirectOutput(ProcessBuilder.Redirect.DISCARD)
                     .redirectError(ProcessBuilder.Redirect.DISCARD)
                     .start().waitFor()

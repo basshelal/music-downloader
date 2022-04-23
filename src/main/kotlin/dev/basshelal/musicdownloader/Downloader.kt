@@ -1,11 +1,15 @@
 package dev.basshelal.musicdownloader
 
+import java.util.concurrent.atomic.AtomicBoolean
+
 object Downloader {
 
     private val thread = object : Thread() {
 
+        var isRunning: AtomicBoolean = AtomicBoolean(true)
+
         override fun run() {
-            while (true) {
+            while (isRunning.get()) {
 
                 val ytdlExec: String = ApplicationConfig.executable
 
@@ -17,9 +21,19 @@ object Downloader {
                         .redirectError(ProcessBuilder.Redirect.INHERIT)
                         .start().waitFor()
 
-                sleep(5_000)
+                try {
+                    sleep(Long.MAX_VALUE)
+                } catch (e: InterruptedException) {
+                    println("Stopping Downloader thread...")
+                }
             }
         }
+    }
+
+    fun initialize() {
+        Runtime.getRuntime().addShutdownHook(Thread {
+            Downloader.stop()
+        })
     }
 
     fun start() {
@@ -27,6 +41,9 @@ object Downloader {
     }
 
     fun stop() {
-        if (thread.isAlive) thread.stop()
+        if (thread.isAlive) {
+            thread.isRunning.set(false)
+            thread.interrupt()
+        }
     }
 }
