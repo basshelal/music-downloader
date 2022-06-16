@@ -6,6 +6,7 @@
 
 # if false, then music downloader will automatically try to fix invalid config options,
 # such as creating missing directories, fixing bad numbers or using default values for missing options
+# if true, then if any config option is invalid, music download will not proceed
 strict-mode: false
 
 # ==================
@@ -21,7 +22,7 @@ input-dir:  "./urls/"
 # Audio formats to use, allowed formats are: m4a, mp3, flac, wav
 formats:  [ "m4a" ]
 
-# Cookies for each download source, empty string for no cookies file
+# Cookies text file to download using authentication
 cookies: "./cookies/youtube-cookies.txt"
 
 # Archives directory to keep track of downloaded music, a directory will be made for each format
@@ -36,12 +37,15 @@ rescan-period: 360
 # ytdl executable, this should be recognizable and runnable from a shell
 executable: "yt-dlp"
 
-# Is file enabled, if true will use a file watcher to check for changes to input-dir
-file-watching-enabled: true
+# Is file watching enabled, if true will use a file watcher to check for changes to input-dir
+file-watching: true
 
 # ===============
 # Storage options
 # ===============
+
+# Backup enabled
+backup-enabled: true
 
 # Backup location(s)
 backup-dirs:

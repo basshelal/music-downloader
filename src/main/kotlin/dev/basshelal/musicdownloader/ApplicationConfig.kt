@@ -42,6 +42,14 @@ object ApplicationConfig : Config {
         private set
     override var executable: String by LateInit()
         private set
+    override var isFileWatching: Boolean by LateInit()
+        private set // TODO implement!
+    override var isBackupEnabled: Boolean by LateInit()
+        private set // TODO implement!
+    override var backupDirs: List<String> by LateInit()
+        private set // TODO implement!
+    override var backupPeriod: Int by LateInit()
+        private set // TODO implement!
 
     fun initialize(args: Array<String>) {
         this.commandLineConfig = CommandLineConfig().also {

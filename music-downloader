@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if [[ -z "$*" ]]; then
-  gradlew music-downloader
+  ./gradlew music-downloader
 else
-  gradlew music-downloader --args="$*"
+  ./gradlew music-downloader --args="$*"
 fi

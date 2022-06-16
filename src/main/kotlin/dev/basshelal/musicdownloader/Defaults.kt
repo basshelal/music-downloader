@@ -16,5 +16,9 @@ object Defaults {
         override val rateLimit: Int = 0
         override val rescanPeriod: Int = 360
         override val executable: String = "yt-dlp"
+        override val isFileWatching: Boolean = true
+        override val isBackupEnabled: Boolean = false
+        override val backupDirs: List<String> = emptyList()
+        override val backupPeriod: Int = 3.hoursToMinutes()
     }
 }

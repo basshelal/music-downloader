@@ -18,6 +18,10 @@ interface Config {
     val rateLimit: Int?
     val rescanPeriod: Int?
     val executable: String?
+    val isFileWatching: Boolean?
+    val isBackupEnabled: Boolean?
+    val backupDirs: List<String>?
+    val backupPeriod: Int?
 }
 
 @kotlinx.serialization.Serializable
@@ -39,7 +43,15 @@ data class YamlConfig(
         @SerialName("rescan-period")
         override val rescanPeriod: Int,
         @SerialName("executable")
-        override val executable: String
+        override val executable: String,
+        @SerialName("file-watching")
+        override val isFileWatching: Boolean,
+        @SerialName("backup-enabled")
+        override val isBackupEnabled: Boolean,
+        @SerialName("backup-dirs")
+        override val backupDirs: List<String>,
+        @SerialName("backup-period")
+        override val backupPeriod: Int
 ) : Config
 
 // Read docs here https://ajalt.github.io/clikt/parameters/#parameter-names
@@ -85,6 +97,18 @@ class CommandLineConfig : Config,
     override val rescanPeriod: Int? by option(names = arrayOf("--rescan-period")).int()
 
     override val executable: String? by option(names = arrayOf("--exec", "--ytdl", "--executable", "--exec"))
+
+    override val isFileWatching: Boolean? by option(names = arrayOf("--file-watching")).convert { java.lang.Boolean.valueOf(it) }
+            .default(true)
+
+    override val isBackupEnabled: Boolean?
+        get() = TODO("Not yet implemented")
+
+    override val backupDirs: List<String>?
+        get() = TODO("Not yet implemented")
+
+    override val backupPeriod: Int?
+        get() = TODO("Not yet implemented")
 
     override fun run() = Unit
 }

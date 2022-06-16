@@ -2,6 +2,7 @@
 
 package dev.basshelal.musicdownloader
 
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 import kotlin.system.exitProcess
@@ -24,6 +25,26 @@ internal class LateInit<T : Any>(initialVal: T? = null,
     }
 }
 
-internal inline fun printErr(message: Any?)  = System.err.println(message)
+internal class AtomicBooleanDelegate(initialVal: Boolean = false) : ReadWriteProperty<Any?, Boolean> {
+    private val value: AtomicBoolean = AtomicBoolean(initialVal)
+
+    override fun getValue(thisRef: Any?, property: KProperty<*>): Boolean = this.value.get()
+
+    override fun setValue(thisRef: Any?, property: KProperty<*>, value: Boolean): Unit = this.value.set(value)
+}
+
+internal inline fun printErr(message: Any?) = System.err.println(message)
 
 internal inline fun exit(code: Int = 0): Nothing = exitProcess(code)
+
+internal inline fun addShutdownHook(func: Runnable) {
+    Runtime.getRuntime().addShutdownHook(Thread(func))
+}
+
+internal inline fun Thread.blockUntil(
+        millis: Long = 10,
+        condition: (Thread) -> Boolean) {
+    while (!condition(this)) Thread.sleep(millis)
+}
+
+internal inline fun Int.hoursToMinutes() : Int = this * 60
