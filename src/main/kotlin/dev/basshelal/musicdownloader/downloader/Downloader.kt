@@ -1,11 +1,16 @@
-package dev.basshelal.musicdownloader
+package dev.basshelal.musicdownloader.downloader
+
+import dev.basshelal.musicdownloader.config.ApplicationConfig
+import dev.basshelal.musicdownloader.core.LoopingThread
+import dev.basshelal.musicdownloader.core.addShutdownHook
+import dev.basshelal.musicdownloader.log.Log
 
 object Downloader {
 
     private val thread = LoopingThread {
         val ytdlExec: String = ApplicationConfig.executable
 
-        println("Starting $ytdlExec")
+        Log.i("Starting $ytdlExec")
 
         ProcessBuilder(ytdlExec, "--version")
                 .redirectOutput(ProcessBuilder.Redirect.INHERIT)
@@ -16,7 +21,7 @@ object Downloader {
     }
 
     fun initialize() {
-        addShutdownHook { Downloader.stop() }
+        addShutdownHook { stop() }
     }
 
     fun start() {

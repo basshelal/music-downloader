@@ -1,6 +1,6 @@
 @file:Suppress("RedundantVisibilityModifier")
 
-package dev.basshelal.musicdownloader
+package dev.basshelal.musicdownloader.core
 
 internal class LoopingThread(runnable: Runnable? = null) {
 

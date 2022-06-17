@@ -25,7 +25,7 @@ formats:  [ "m4a" ]
 # Cookies text file to download using authentication
 cookies: "./cookies/youtube-cookies.txt"
 
-# Archives directory to keep track of downloaded music, a directory will be made for each format
+# Archives directory to keep track of downloaded music
 archives-dir: "./archives/"
 
 # Download rate limit in MB/s, 0 for no limit

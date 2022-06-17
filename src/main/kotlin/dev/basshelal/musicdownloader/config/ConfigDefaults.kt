@@ -1,12 +1,14 @@
-package dev.basshelal.musicdownloader
+package dev.basshelal.musicdownloader.config
 
-object Defaults {
+import dev.basshelal.musicdownloader.core.hoursToMinutes
+
+object ConfigDefaults {
 
     val supportedFormats: List<String> = listOf("m4a", "wav", "mp3", "flac")
 
     val configFilePath: String = "./config.yaml"
 
-    object Config : dev.basshelal.musicdownloader.Config {
+    object Config : dev.basshelal.musicdownloader.config.Config {
         override val strictMode: Boolean = false
         override val outputDir: String = "./music/"
         override val inputDir: String = "./urls/"

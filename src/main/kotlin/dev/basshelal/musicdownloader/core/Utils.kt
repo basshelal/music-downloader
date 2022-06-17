@@ -1,7 +1,11 @@
 @file:Suppress("NOTHING_TO_INLINE")
 
-package dev.basshelal.musicdownloader
+package dev.basshelal.musicdownloader.core
 
+import com.github.ajalt.clikt.parameters.options.RawOption
+import com.github.ajalt.clikt.parameters.options.convert
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -47,4 +51,9 @@ internal inline fun Thread.blockUntil(
     while (!condition(this)) Thread.sleep(millis)
 }
 
-internal inline fun Int.hoursToMinutes() : Int = this * 60
+internal inline fun Int.hoursToMinutes(): Int = this * 60
+
+internal inline fun RawOption.boolean() = convert { java.lang.Boolean.valueOf(it) }
+
+internal inline val formattedLocalDateTime: String
+    get() = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss:SSS E dd-MM-yyyy"))

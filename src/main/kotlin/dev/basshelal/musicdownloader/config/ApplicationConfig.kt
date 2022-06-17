@@ -1,12 +1,15 @@
 @file:Suppress("NOTHING_TO_INLINE")
 
-package dev.basshelal.musicdownloader
+package dev.basshelal.musicdownloader.config
 
 import com.charleskorn.kaml.Yaml
 import com.charleskorn.kaml.YamlConfiguration
 import com.charleskorn.kaml.YamlException
 import com.charleskorn.kaml.decodeFromStream
 import com.github.ajalt.clikt.core.PrintHelpMessage
+import dev.basshelal.musicdownloader.core.LateInit
+import dev.basshelal.musicdownloader.core.exit
+import dev.basshelal.musicdownloader.core.printErr
 import java.io.File
 import java.io.IOException
 
@@ -52,7 +55,7 @@ object ApplicationConfig : Config {
         private set // TODO implement!
 
     fun initialize(args: Array<String>) {
-        this.commandLineConfig = CommandLineConfig().also {
+        commandLineConfig = CommandLineConfig().also {
             try {
                 it.parse(args)
             } catch (e: PrintHelpMessage) {
@@ -61,14 +64,14 @@ object ApplicationConfig : Config {
             }
         }
 
-        this.configFile = File(commandLineConfig.configFilePath).also {
+        configFile = File(commandLineConfig.configFilePath).also {
             if (!it.exists() || !it.isFile) {
                 printErr("File ${commandLineConfig.configFilePath} does not exist")
                 exit(1)
             }
         }
 
-        this.yamlConfig = try {
+        yamlConfig = try {
             Yaml(configuration = YamlConfiguration(strictMode = false))
                     .decodeFromStream(configFile.inputStream())
         } catch (e: YamlException) {
@@ -77,17 +80,17 @@ object ApplicationConfig : Config {
             exit(1)
         }
 
-        this.strictMode = commandLineConfig.strictMode ?: yamlConfig.strictMode
-        this.outputDir = commandLineConfig.outputDir ?: yamlConfig.outputDir
-        this.inputDir = commandLineConfig.inputDir ?: yamlConfig.inputDir
-        this.formats = commandLineConfig.formats ?: yamlConfig.formats
-        this.cookies = commandLineConfig.cookies ?: yamlConfig.cookies
-        this.archivesDir = commandLineConfig.archivesDir ?: yamlConfig.archivesDir
-        this.rateLimit = commandLineConfig.rateLimit ?: yamlConfig.rateLimit
-        this.rescanPeriod = commandLineConfig.rescanPeriod ?: yamlConfig.rescanPeriod
-        this.executable = commandLineConfig.executable ?: yamlConfig.executable
+        strictMode = commandLineConfig.strictMode ?: yamlConfig.strictMode
+        outputDir = commandLineConfig.outputDir ?: yamlConfig.outputDir
+        inputDir = commandLineConfig.inputDir ?: yamlConfig.inputDir
+        formats = commandLineConfig.formats ?: yamlConfig.formats
+        cookies = commandLineConfig.cookies ?: yamlConfig.cookies
+        archivesDir = commandLineConfig.archivesDir ?: yamlConfig.archivesDir
+        rateLimit = commandLineConfig.rateLimit ?: yamlConfig.rateLimit
+        rescanPeriod = commandLineConfig.rescanPeriod ?: yamlConfig.rescanPeriod
+        executable = commandLineConfig.executable ?: yamlConfig.executable
 
-        this.verifyConfig()
+        verifyConfig()
     }
 
     private inline fun verifyConfig() {
@@ -131,13 +134,13 @@ object ApplicationConfig : Config {
                 errors++
             }
         }
-        if (formats.any { it !in Defaults.supportedFormats }) {
+        if (formats.any { it !in ConfigDefaults.supportedFormats }) {
             if (!strictMode) {
-                println("Formats contains unknown format(s):\n${formats.filter { it !in Defaults.supportedFormats }}" +
+                println("Formats contains unknown format(s):\n${formats.filter { it !in ConfigDefaults.supportedFormats }}" +
                         "\n\tSupported formats are m4a,wav,mp3,flac\n\tRemoving unknown formats")
                 formats = formats.filter { it in listOf("m4a", "wav", "mp3", "flac") }.distinct()
             } else {
-                printErr("Formats contains unknown format(s):\n${formats.filter { it !in Defaults.supportedFormats }}" +
+                printErr("Formats contains unknown format(s):\n${formats.filter { it !in ConfigDefaults.supportedFormats }}" +
                         "\n\tSupported formats are m4a,wav,mp3,flac")
                 errors++
             }

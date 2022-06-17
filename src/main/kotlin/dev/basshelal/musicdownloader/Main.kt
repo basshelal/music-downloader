@@ -1,17 +1,29 @@
 package dev.basshelal.musicdownloader
 
+import dev.basshelal.musicdownloader.config.ApplicationConfig
+import dev.basshelal.musicdownloader.core.formattedLocalDateTime
+import dev.basshelal.musicdownloader.downloader.Downloader
+import dev.basshelal.musicdownloader.log.Log
+
 fun main(args: Array<String>) {
+
+    Log.addLogFile(null, "$formattedLocalDateTime.log")
 
     ApplicationConfig.initialize(args)
 
+    Log.v("initialized!")
+
     Downloader.initialize()
+
+    Log.v("starting!")
 
     Downloader.start()
 
+    Log.v("started!")
+
     // TODO: 16-Jun-2022 @basshelal: File watcher system
 
-    // TODO: 16-Jun-2022 @basshelal: Bulk song data editor including tags
-
-    // TODO: 16-Jun-2022 @basshelal: Database (mongo) for Youtube video IDs? This may not be useful
+    // TODO: 16-Jun-2022 @basshelal: Song data editor including tags such as Title Artist Album in addition to custom
+    //  tags
 
 }
