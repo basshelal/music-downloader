@@ -2,6 +2,7 @@ package dev.basshelal.musicdownloader.log
 
 import dev.basshelal.musicdownloader.core.addShutdownHook
 import dev.basshelal.musicdownloader.core.formattedLocalDateTime
+import dev.basshelal.musicdownloader.core.println
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileOutputStream
@@ -44,14 +45,6 @@ object Log {
     public fun i(message: String) = log(Level.INFO, message)
 
     public fun v(message: String) = log(Level.VERBOSE, message)
-
-    private fun BufferedWriter.println(message: String) {
-        synchronized(this) {
-            this.write(message)
-            this.newLine()
-            this.flush()
-        }
-    }
 
     public fun log(level: Level, message: String): Unit {
         // TODO: 17-Jun-2022 @basshelal: Add colors

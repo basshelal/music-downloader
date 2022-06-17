@@ -1,22 +1,27 @@
 package dev.basshelal.musicdownloader.downloader
 
 import dev.basshelal.musicdownloader.config.ApplicationConfig
-import dev.basshelal.musicdownloader.core.LoopingThread
+import dev.basshelal.musicdownloader.core.threads.LoopingThread
+import dev.basshelal.musicdownloader.core.YoutubeDL
 import dev.basshelal.musicdownloader.core.addShutdownHook
 import dev.basshelal.musicdownloader.log.Log
+import java.io.File
 
 object Downloader {
+
+    private var youtubeDL: YoutubeDL? = null
 
     private val thread = LoopingThread {
         val ytdlExec: String = ApplicationConfig.executable
 
         Log.i("Starting $ytdlExec")
 
-        ProcessBuilder(ytdlExec, "--version")
-                .redirectOutput(ProcessBuilder.Redirect.INHERIT)
-                .redirectInput(ProcessBuilder.Redirect.INHERIT)
-                .redirectError(ProcessBuilder.Redirect.INHERIT)
-                .start().waitFor()
+        youtubeDL = YoutubeDL.builder()
+                .exec(ytdlExec)
+                .addArg("--version")
+                .build().start().blockUntilCompletion()
+
+        Thread.sleep(2000)
 
     }
 
@@ -29,6 +34,7 @@ object Downloader {
     }
 
     fun stop() {
+        youtubeDL?.stop()
         thread.stop()
     }
 }

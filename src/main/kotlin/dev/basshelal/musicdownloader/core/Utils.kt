@@ -4,9 +4,11 @@ package dev.basshelal.musicdownloader.core
 
 import com.github.ajalt.clikt.parameters.options.RawOption
 import com.github.ajalt.clikt.parameters.options.convert
+import java.io.BufferedWriter
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 import kotlin.system.exitProcess
@@ -37,6 +39,14 @@ internal class AtomicBooleanDelegate(initialVal: Boolean = false) : ReadWritePro
     override fun setValue(thisRef: Any?, property: KProperty<*>, value: Boolean): Unit = this.value.set(value)
 }
 
+internal class AtomicValueDelegate<E>(initialVal: E) : ReadWriteProperty<Any?, E> {
+    private val value: AtomicReference<E> = AtomicReference(initialVal)
+
+    override fun getValue(thisRef: Any?, property: KProperty<*>): E = this.value.get()
+
+    override fun setValue(thisRef: Any?, property: KProperty<*>, value: E): Unit = this.value.set(value)
+}
+
 internal inline fun printErr(message: Any?) = System.err.println(message)
 
 internal inline fun exit(code: Int = 0): Nothing = exitProcess(code)
@@ -57,3 +67,16 @@ internal inline fun RawOption.boolean() = convert { java.lang.Boolean.valueOf(it
 
 internal inline val formattedLocalDateTime: String
     get() = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss:SSS E dd-MM-yyyy"))
+
+internal inline fun <T> MutableCollection<T>.setAll(collection: Collection<T>) {
+    this.clear()
+    this.addAll(collection)
+}
+
+internal fun BufferedWriter.println(message: String) {
+    synchronized(this) {
+        this.write(message)
+        this.newLine()
+        this.flush()
+    }
+}
