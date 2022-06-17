@@ -1,5 +1,8 @@
+@file:Suppress("NOTHING_TO_INLINE")
+
 package dev.basshelal.musicdownloader.log
 
+import dev.basshelal.musicdownloader.core.AtomicValueDelegate
 import dev.basshelal.musicdownloader.core.addShutdownHook
 import dev.basshelal.musicdownloader.core.formattedLocalDateTime
 import dev.basshelal.musicdownloader.core.println
@@ -10,7 +13,9 @@ import java.io.OutputStreamWriter
 
 object Log {
 
-    enum class Level { ERROR, WARN, DEBUG, INFO, VERBOSE }
+    enum class Level { NONE, ERROR, WARN, DEBUG, INFO, VERBOSE }
+
+    public var level: Level by AtomicValueDelegate(Level.INFO)
 
     private val streams: MutableMap<Level, MutableList<BufferedWriter>> = mutableMapOf()
 
@@ -50,7 +55,29 @@ object Log {
         // TODO: 17-Jun-2022 @basshelal: Add colors
         val time: String = formattedLocalDateTime
         streams[level]?.forEach {
-            it.println("$time [${level.name}] : " + message)
+            if (level <= this.level)
+                it.println("$time [${level.name}] : " + message)
         }
     }
 }
+
+public inline fun logE(message: String) = Log.e(message)
+public inline fun logW(message: String) = Log.w(message)
+public inline fun logD(message: String) = Log.d(message)
+public inline fun logI(message: String) = Log.i(message)
+public inline fun logV(message: String) = Log.v(message)
+
+@JvmName("logEExt")
+public inline fun String.logE() = Log.e(this)
+
+@JvmName("logWExt")
+public inline fun String.logW() = Log.w(this)
+
+@JvmName("logDExt")
+public inline fun String.logD() = Log.d(this)
+
+@JvmName("logIExt")
+public inline fun String.logI() = Log.i(this)
+
+@JvmName("logVExt")
+public inline fun String.logV() = Log.v(this)

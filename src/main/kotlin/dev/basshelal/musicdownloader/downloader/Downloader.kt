@@ -1,11 +1,13 @@
 package dev.basshelal.musicdownloader.downloader
 
 import dev.basshelal.musicdownloader.config.ApplicationConfig
-import dev.basshelal.musicdownloader.core.threads.LoopingThread
+import dev.basshelal.musicdownloader.core.AudioFormat
+import dev.basshelal.musicdownloader.core.QualityFormat
+import dev.basshelal.musicdownloader.core.ThumbnailFormat
 import dev.basshelal.musicdownloader.core.YoutubeDL
 import dev.basshelal.musicdownloader.core.addShutdownHook
+import dev.basshelal.musicdownloader.core.threads.LoopingThread
 import dev.basshelal.musicdownloader.log.Log
-import java.io.File
 
 object Downloader {
 
@@ -18,10 +20,21 @@ object Downloader {
 
         youtubeDL = YoutubeDL.builder()
                 .exec(ytdlExec)
-                .addArg("--version")
+                .simulate()
+                .quiet()
+                .progress()
+                .url("https://www.youtube.com/watch?v=51aIQc6E4AI")
+                .extractAudio()
+                .format(AudioFormat.FLAC)
+                .quality(QualityFormat.BEST)
+                .embedThumbnail()
+                .thumbnailFormat(ThumbnailFormat.PNG)
+                .embedMetadata()
+                .sleepIntervalMin(5)
+                .noWarnings()
+                .ignoreErrors()
+                .retries(100)
                 .build().start().blockUntilCompletion()
-
-        Thread.sleep(2000)
 
     }
 

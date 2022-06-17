@@ -5,3 +5,6 @@ if [[ -z "$*" ]]; then
 else
   ./gradlew music-downloader --args="$*"
 fi
+
+# To run without Gradle
+# java -classpath "$(./gradlew classpath)" dev.basshelal.musicdownloader.MainKt

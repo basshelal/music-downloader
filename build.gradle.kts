@@ -17,9 +17,13 @@ tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "14"
 }
 
-tasks.register<JavaExec>(name="music-downloader") {
+tasks.register<JavaExec>(name = "music-downloader") {
     mainClass.set("dev.basshelal.musicdownloader.MainKt")
     classpath = sourceSets.main.get().runtimeClasspath
+}
+
+tasks.register("classpath") {
+    println(sourceSets.main.get().runtimeClasspath.asPath)
 }
 
 repositories {

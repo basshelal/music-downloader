@@ -66,7 +66,7 @@ internal inline fun Int.hoursToMinutes(): Int = this * 60
 internal inline fun RawOption.boolean() = convert { java.lang.Boolean.valueOf(it) }
 
 internal inline val formattedLocalDateTime: String
-    get() = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss:SSS E dd-MM-yyyy"))
+    get() = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH:mm:ss:SSS"))
 
 internal inline fun <T> MutableCollection<T>.setAll(collection: Collection<T>) {
     this.clear()

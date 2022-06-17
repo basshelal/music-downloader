@@ -1,6 +1,7 @@
 package dev.basshelal.musicdownloader
 
 import dev.basshelal.musicdownloader.config.ApplicationConfig
+import dev.basshelal.musicdownloader.core.addShutdownHook
 import dev.basshelal.musicdownloader.core.formattedLocalDateTime
 import dev.basshelal.musicdownloader.downloader.Downloader
 import dev.basshelal.musicdownloader.log.Log
@@ -8,6 +9,8 @@ import dev.basshelal.musicdownloader.log.Log
 fun main(args: Array<String>) {
 
     Log.addLogFile(null, "$formattedLocalDateTime.log")
+
+    addShutdownHook { Log.e("Exiting!") }
 
     ApplicationConfig.initialize(args)
 
