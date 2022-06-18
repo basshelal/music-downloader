@@ -90,3 +90,7 @@ internal fun mkfl(path: String): Boolean = File(path).let {
     it.parentFile.mkdirs()
     it.createNewFile()
 }
+
+internal fun readDir(path: String): List<String> = File(path).let {
+    it.listFiles()?.map { it.path }?.sorted() ?: emptyList()
+}

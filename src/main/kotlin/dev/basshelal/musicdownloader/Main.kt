@@ -11,6 +11,8 @@ fun main(args: Array<String>) {
 
     Log.addLogFile(null, "$formattedLocalDateTime.log")
 
+    Log.level = Log.Level.VERBOSE
+
     addShutdownHook { Log.e("Exiting!") }
 
     ApplicationConfig.initialize(args)

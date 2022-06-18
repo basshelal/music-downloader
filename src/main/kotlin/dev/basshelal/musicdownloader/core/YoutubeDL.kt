@@ -38,7 +38,7 @@ private constructor(private val processBuilder: ProcessBuilder) {
         fun embedMetadata(): Builder = addFlag("--embed-metadata")
                 .addFlag("--no-embed-chapters").addFlag("--no-embed-info-json")
 
-        fun sleepIntervalMin(min: Int): Builder = addArg("--sleep-interval", min.toString())
+        fun sleepInterval(value: Int): Builder = addArg("--sleep-interval", value.toString())
 
         fun quiet(): Builder = addFlag("--quiet")
 
@@ -62,7 +62,7 @@ private constructor(private val processBuilder: ProcessBuilder) {
 
         fun limitRate(bytesPerSecond: String): Builder = addArg("--limit-rate", bytesPerSecond)
 
-        fun downloadArchive(archivePath: String): Builder = addArg("--download-archive", archivePath)
+        fun archive(archivePath: String): Builder = addArg("--download-archive", archivePath)
 
         fun ignoreErrors(): Builder = addFlag("--ignore-errors")
 
@@ -138,5 +138,9 @@ private constructor(private val processBuilder: ProcessBuilder) {
     }
 
     val infoString: String?
-        get() = process?.let { "[${it.pid()}] ${it.info()?.commandLine()?.get()}" }
+        get() = process?.let { process ->
+            process.info()?.commandLine()?.get()?.let { commandLine ->
+                "[${process.pid()}] $commandLine"
+            }
+        }
 }

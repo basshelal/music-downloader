@@ -8,6 +8,13 @@ enum class AudioFormat {
     companion object {
         val list: List<AudioFormat> = AudioFormat.values().toList()
         val stringList: List<String> = AudioFormat.values().toList().map { it.toString() }
+        fun fromString(string: String): AudioFormat = when (string) {
+            "m4a", "M4A" -> M4A
+            "flac", "FLAC", "flc" -> FLAC
+            "mp3", "MP3" -> MP3
+            "wav", "WAV" -> WAV
+            else -> M4A
+        }
     }
 }
 
