@@ -7,11 +7,17 @@ import com.charleskorn.kaml.YamlConfiguration
 import com.charleskorn.kaml.YamlException
 import com.charleskorn.kaml.decodeFromStream
 import com.github.ajalt.clikt.core.PrintHelpMessage
+import dev.basshelal.musicdownloader.core.AudioFormat
 import dev.basshelal.musicdownloader.core.LateInit
+import dev.basshelal.musicdownloader.core.YoutubeDL
 import dev.basshelal.musicdownloader.core.exit
-import dev.basshelal.musicdownloader.core.printErr
+import dev.basshelal.musicdownloader.core.isDir
+import dev.basshelal.musicdownloader.core.isFile
+import dev.basshelal.musicdownloader.core.mkdirs
+import dev.basshelal.musicdownloader.core.mkfl
+import dev.basshelal.musicdownloader.log.logE
+import dev.basshelal.musicdownloader.log.logW
 import java.io.File
-import java.io.IOException
 
 /** The current config across the entire application */
 object ApplicationConfig : Config {
@@ -43,16 +49,16 @@ object ApplicationConfig : Config {
         private set
     override var rescanPeriod: Int by LateInit()
         private set
-    override var executable: String by LateInit()
+    override var downloaderExec: String by LateInit()
         private set
-    override var isFileWatching: Boolean by LateInit()
-        private set // TODO implement!
     override var isBackupEnabled: Boolean by LateInit()
-        private set // TODO implement!
+        private set
     override var backupDirs: List<String> by LateInit()
-        private set // TODO implement!
+        private set
     override var backupPeriod: Int by LateInit()
-        private set // TODO implement!
+        private set
+    override var downloaderArgs: String by LateInit()
+        private set
 
     fun initialize(args: Array<String>) {
         commandLineConfig = CommandLineConfig().also {
@@ -66,17 +72,17 @@ object ApplicationConfig : Config {
 
         configFile = File(commandLineConfig.configFilePath).also {
             if (!it.exists() || !it.isFile) {
-                printErr("File ${commandLineConfig.configFilePath} does not exist")
+                logE("File ${commandLineConfig.configFilePath} does not exist, cannot proceed, exiting")
                 exit(1)
             }
         }
 
         yamlConfig = try {
-            Yaml(configuration = YamlConfiguration(strictMode = false))
+            Yaml(configuration = YamlConfiguration(strictMode = false /*ignore unknown keys*/))
                     .decodeFromStream(configFile.inputStream())
         } catch (e: YamlException) {
             e.printStackTrace()
-            printErr("An error occurred trying to read the config file located at ${configFile.absolutePath}, exiting")
+            logE("An error occurred trying to read the config file located at ${configFile.absolutePath}, exiting")
             exit(1)
         }
 
@@ -88,95 +94,113 @@ object ApplicationConfig : Config {
         archivesDir = commandLineConfig.archivesDir ?: yamlConfig.archivesDir
         rateLimit = commandLineConfig.rateLimit ?: yamlConfig.rateLimit
         rescanPeriod = commandLineConfig.rescanPeriod ?: yamlConfig.rescanPeriod
-        executable = commandLineConfig.executable ?: yamlConfig.executable
+        downloaderExec = commandLineConfig.downloaderExec ?: yamlConfig.downloaderExec
+        isBackupEnabled = commandLineConfig.isBackupEnabled ?: yamlConfig.isBackupEnabled
+        backupDirs = commandLineConfig.backupDirs ?: yamlConfig.backupDirs
+        backupPeriod = commandLineConfig.backupPeriod ?: yamlConfig.backupPeriod
 
         verifyConfig()
     }
 
+    private var errors = 0
+    private inline fun error(message: String) {
+        logE(message)
+        errors++
+    }
+
     private inline fun verifyConfig() {
-        var errors = 0
-        if (!File(outputDir).isDirectory) {
+        if (!isDir(outputDir)) {
             if (!strictMode) {
-                println("Output directory: $outputDir not found, creating $outputDir")
-                File(outputDir).mkdirs()
+                logW("Output directory: $outputDir not found, creating $outputDir")
+                if (!mkdirs(outputDir))
+                    error("Failed to create dir $outputDir")
             } else {
-                printErr("Output directory: $outputDir not found!")
-                errors++
+                error("Output directory: $outputDir not found!")
             }
         }
-        if (!File(inputDir).isDirectory) {
+        if (!isDir(inputDir)) {
             if (!strictMode) {
-                println("Input directory: $inputDir not found, creating $inputDir")
-                File(inputDir).mkdirs()
+                logW("Input directory: $inputDir not found, creating $inputDir")
+                if (!mkdirs(inputDir))
+                    error("Failed to create dir $inputDir")
             } else {
-                printErr("Input directory: $inputDir not found!")
-                errors++
+                error("Input directory: $inputDir not found!")
             }
         }
-        if (!File(archivesDir).isDirectory) {
+        if (!isDir(archivesDir)) {
             if (!strictMode) {
-                println("Archives directory: $archivesDir not found, creating $archivesDir")
-                File(archivesDir).mkdirs()
+                logW("Archives directory: $archivesDir not found, creating $archivesDir")
+                if (!mkdirs(archivesDir))
+                    error("Failed to create dir $outputDir")
             } else {
-                printErr("Archives directory: $archivesDir not found!")
-                errors++
+                error("Archives directory: $archivesDir not found!")
             }
         }
-        if (!File(cookies).isFile) {
+        if (!isFile(cookies)) {
             if (!strictMode) {
-                println("Cookies file: $cookies not found, creating $cookies")
-                File(cookies).also {
-                    it.parentFile.mkdirs()
-                    it.createNewFile()
+                logW("Cookies file: $cookies not found, creating $cookies")
+                if (!mkfl(cookies))
+                    error("Failed to create file $cookies")
+            } else {
+                error("Cookies file: $cookies not found")
+            }
+        }
+        if (formats.any { it !in AudioFormat.stringList }) {
+            if (!strictMode) {
+                logW("Formats contains unknown format(s):\n${formats.filter { it !in AudioFormat.stringList }}" +
+                        "\n\tSupported formats are ${AudioFormat.stringList.joinToString(",")}" +
+                        "\n\tRemoving unknown formats")
+                formats = formats.filter { it in AudioFormat.stringList }.distinct()
+                if (formats.isEmpty()) {
+                    formats = ConfigDefaults.Config.formats
+                    logW("Formats is empty, using defaults: ${formats.joinToString(",")}")
                 }
             } else {
-                printErr("Cookies file: $cookies not found")
-                errors++
-            }
-        }
-        if (formats.any { it !in ConfigDefaults.supportedFormats }) {
-            if (!strictMode) {
-                println("Formats contains unknown format(s):\n${formats.filter { it !in ConfigDefaults.supportedFormats }}" +
-                        "\n\tSupported formats are m4a,wav,mp3,flac\n\tRemoving unknown formats")
-                formats = formats.filter { it in listOf("m4a", "wav", "mp3", "flac") }.distinct()
-            } else {
-                printErr("Formats contains unknown format(s):\n${formats.filter { it !in ConfigDefaults.supportedFormats }}" +
-                        "\n\tSupported formats are m4a,wav,mp3,flac")
-                errors++
+                error("Formats contains unknown format(s):\n${formats.filter { it !in AudioFormat.stringList }}" +
+                        "\n\tSupported formats are ${AudioFormat.stringList.joinToString(",")}")
             }
         }
         if (rateLimit < 0) {
             if (!strictMode) {
-                println("Rate limit: $rateLimit is less than 0, setting to default: 0")
-                rateLimit = 0
+                logW("Rate limit: $rateLimit is less than 0, setting to default: ${ConfigDefaults.Config.rateLimit}")
+                rateLimit = ConfigDefaults.Config.rateLimit
             } else {
-                printErr("Rate limit: $rateLimit is less than 0!")
-                errors++
+                error("Rate limit: $rateLimit is less than 0!")
             }
         }
         if (rescanPeriod < 0) {
             if (!strictMode) {
-                printErr("Rescan period: $rescanPeriod is less than 0, setting to default: 360")
-                rescanPeriod = 360
+                logW("Rescan period: $rescanPeriod is less than 0, setting to default: ${ConfigDefaults.Config.rescanPeriod}")
+                rescanPeriod = ConfigDefaults.Config.rescanPeriod
             } else {
-                printErr("Rescan period: $rescanPeriod is less than 0!")
-                errors++
+                error("Rescan period: $rescanPeriod is less than 0!")
             }
         }
 
-        try {
-            ProcessBuilder(executable)
-                    .redirectOutput(ProcessBuilder.Redirect.DISCARD)
-                    .redirectError(ProcessBuilder.Redirect.DISCARD)
-                    .start().waitFor()
-        } catch (e: IOException) {
-            printErr("FATAL ERROR:\n\tCould not find executable $executable, " +
-                    "ensure that it exists and is accessible from PATH")
-            errors++
+        if (!YoutubeDL.verifyExec(downloaderExec)) {
+            if (!strictMode) {
+                logW("Executable: $downloaderExec could not be found, using default: ${ConfigDefaults.Config.downloaderExec}")
+                downloaderExec = ConfigDefaults.Config.downloaderExec
+            } else {
+                error("Executable: $downloaderExec could not be found, " +
+                        "ensure that it exists and is accessible from PATH")
+            }
         }
 
+        // TODO: 18-Jun-2022 @basshelal: Verify backup options
+        //  for the backup system how it should work is NEVER at the same time as the download because we will likely
+        //  be using rsync and this could cause inconsistencies while downloading, so instead we always give priority
+        //  to one (still unsure which one) and when it's time for the other to run, we queue it. For example,
+        //  if we are currently downloading and it's time to run a backup, we queue it and as soon as the download is
+        //  finished, we run the backup, similarly, if that backup is running and it's time to download, we wait for
+        //  the backup to finish and start downloading, queueing is not technically necessary since we won't download
+        //  multiple times if the backup took too long, just once, so it's more of a flag than a queue
+
+        // TODO: 18-Jun-2022 @basshelal: Downloader args
+
         if (errors > 0) {
-            printErr("$errors errors occurred")
+            logE("$errors unrecoverable errors occurred (some may be due to strict mode being enabled)" +
+                    "\nFix the errors and retry, exiting")
             exit(1)
         }
     }

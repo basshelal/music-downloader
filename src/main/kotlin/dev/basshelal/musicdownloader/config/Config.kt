@@ -10,9 +10,9 @@ interface Config {
     val archivesDir: String?
     val rateLimit: Int?
     val rescanPeriod: Int?
-    val executable: String?
-    val isFileWatching: Boolean?
+    val downloaderExec: String?
     val isBackupEnabled: Boolean?
     val backupDirs: List<String>?
     val backupPeriod: Int?
+    val downloaderArgs: String?
 }

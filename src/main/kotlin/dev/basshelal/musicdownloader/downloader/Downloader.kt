@@ -7,21 +7,17 @@ import dev.basshelal.musicdownloader.core.ThumbnailFormat
 import dev.basshelal.musicdownloader.core.YoutubeDL
 import dev.basshelal.musicdownloader.core.addShutdownHook
 import dev.basshelal.musicdownloader.core.threads.LoopingThread
-import dev.basshelal.musicdownloader.log.Log
 
 object Downloader {
 
     private var youtubeDL: YoutubeDL? = null
 
     private val thread = LoopingThread {
-        val ytdlExec: String = ApplicationConfig.executable
-
-        Log.i("Starting $ytdlExec")
+        val ytdlExec: String = ApplicationConfig.downloaderExec
 
         youtubeDL = YoutubeDL.builder()
                 .exec(ytdlExec)
                 .simulate()
-                .quiet()
                 .progress()
                 .url("https://www.youtube.com/watch?v=51aIQc6E4AI")
                 .extractAudio()

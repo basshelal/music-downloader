@@ -65,13 +65,9 @@ class CommandLineConfig : Config, CliktCommand(
             names = arrayOf("--rescan-period")
     ).int()
 
-    override val executable: String? by option(
+    override val downloaderExec: String? by option(
             names = arrayOf("--exec", "--ytdl", "--executable", "--exec")
     )
-
-    override val isFileWatching: Boolean? by option(
-            names = arrayOf("--file-watching")
-    ).boolean()
 
     override val isBackupEnabled: Boolean? by option(
             names = arrayOf("--backup-enabled")
@@ -84,6 +80,11 @@ class CommandLineConfig : Config, CliktCommand(
     override val backupPeriod: Int? by option(
             names = arrayOf("--backup-period")
     ).int()
+
+    // TODO: 18-Jun-2022 @basshelal: Implement and test
+    override val downloaderArgs: String? by option(
+            names = arrayOf("--downloader-args")
+    )
 
     override fun run() = Unit
 }

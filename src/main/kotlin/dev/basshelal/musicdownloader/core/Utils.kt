@@ -5,6 +5,7 @@ package dev.basshelal.musicdownloader.core
 import com.github.ajalt.clikt.parameters.options.RawOption
 import com.github.ajalt.clikt.parameters.options.convert
 import java.io.BufferedWriter
+import java.io.File
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.atomic.AtomicBoolean
@@ -47,8 +48,6 @@ internal class AtomicValueDelegate<E>(initialVal: E) : ReadWriteProperty<Any?, E
     override fun setValue(thisRef: Any?, property: KProperty<*>, value: E): Unit = this.value.set(value)
 }
 
-internal inline fun printErr(message: Any?) = System.err.println(message)
-
 internal inline fun exit(code: Int = 0): Nothing = exitProcess(code)
 
 internal inline fun addShutdownHook(func: Runnable) {
@@ -79,4 +78,15 @@ internal fun BufferedWriter.println(message: String) {
         this.newLine()
         this.flush()
     }
+}
+
+internal fun isDir(path: String): Boolean = File(path).isDirectory
+
+internal fun mkdirs(path: String): Boolean = File(path).mkdirs()
+
+internal fun isFile(path: String): Boolean = File(path).isFile
+
+internal fun mkfl(path: String): Boolean = File(path).let {
+    it.parentFile.mkdirs()
+    it.createNewFile()
 }

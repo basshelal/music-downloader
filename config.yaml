@@ -35,10 +35,10 @@ rate-limit: 0
 rescan-period: 360
 
 # ytdl executable, this should be recognizable and runnable from a shell
-executable: "yt-dlp"
+executable: "./bin/yt-dlp"
 
-# Is file watching enabled, if true will use a file watcher to check for changes to input-dir
-file-watching: true
+# Additional args to pass to the downloader executable for more fine tune control
+downloader-args: ""
 
 # ===============
 # Storage options
