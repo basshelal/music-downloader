@@ -12,6 +12,8 @@ import dev.basshelal.musicdownloader.core.mkfl
 import dev.basshelal.musicdownloader.core.readDir
 import dev.basshelal.musicdownloader.core.threads.LoopingThread
 import dev.basshelal.musicdownloader.log.logE
+import dev.basshelal.musicdownloader.log.logI
+import dev.basshelal.musicdownloader.log.logV
 import java.io.File
 
 object Downloader {
@@ -34,13 +36,19 @@ object Downloader {
                 .retries(25)
                 .sleepInterval(5)
 
+        "Formats to download: ${ApplicationConfig.formats.joinToString(",")}".logV()
+        "Input files: ${readDir(ApplicationConfig.inputDir).joinToString(",")}".logV()
+
         ApplicationConfig.formats.forEach { format: String ->
+            "Starting download for format: $format".logV()
             readDir(ApplicationConfig.inputDir).forEach { inputFilePath: String ->
+                "Starting download for input file: $inputFilePath".logV()
                 builder.format(AudioFormat.fromString(format))
                         .batchFile(inputFilePath)
 
                 ApplicationConfig.cookies.also { cookiesPath: String ->
                     if (isFile(cookiesPath)) {
+                        "Using cookies file: $cookiesPath".logV()
                         builder.cookies(cookiesPath)
                     } else {
                         logE("Cookies file: $cookiesPath is invalid")
@@ -52,27 +60,36 @@ object Downloader {
                     logE("Could not create archive file: ${archiveFileName}, " +
                             "it may already exist as a directory or its parent directory may have restricted write " +
                             "permissions for this user")
+                } else {
+                    "Using archive file: $archiveFileName".logV()
+                    builder.archive(archiveFileName)
                 }
-                builder.archive(archiveFileName)
 
                 val outputTemplate = "${ApplicationConfig.outputDir}/%(uploader)s/%(title)s-%(uploader)s-%(id)s.%(ext)s"
                 builder.output(outputTemplate)
 
+                "Downloader starting YoutubeDL".logV()
                 youtubeDL = builder
                         .build().start().blockUntilCompletion()
+                "Downloader finished YoutubeDL, restarting".logV()
             }
         }
+        "Sleeping...".logI()
+        Thread.sleep(1_000)
     }
 
     fun initialize() {
+        "Initializing Downloader".logV()
         addShutdownHook { stop() }
     }
 
     fun start() {
+        "Starting Downloader".logV()
         thread.start()
     }
 
     fun stop() {
+        "Stopping Downloader".logV()
         youtubeDL.stop()
         thread.stop()
     }

@@ -15,7 +15,9 @@ import dev.basshelal.musicdownloader.core.isDir
 import dev.basshelal.musicdownloader.core.isFile
 import dev.basshelal.musicdownloader.core.mkdirs
 import dev.basshelal.musicdownloader.core.mkfl
+import dev.basshelal.musicdownloader.core.path
 import dev.basshelal.musicdownloader.log.logE
+import dev.basshelal.musicdownloader.log.logV
 import dev.basshelal.musicdownloader.log.logW
 import java.io.File
 
@@ -98,6 +100,11 @@ object ApplicationConfig : Config {
         isBackupEnabled = commandLineConfig.isBackupEnabled ?: yamlConfig.isBackupEnabled
         backupDirs = commandLineConfig.backupDirs ?: yamlConfig.backupDirs
         backupPeriod = commandLineConfig.backupPeriod ?: yamlConfig.backupPeriod
+        downloaderArgs = commandLineConfig.downloaderArgs ?: yamlConfig.downloaderArgs
+
+        """Config pre-verification:
+           |${this.jsonify()}
+        """.trimMargin().logV()
 
         verifyConfig()
     }
@@ -109,6 +116,14 @@ object ApplicationConfig : Config {
     }
 
     private inline fun verifyConfig() {
+        // Convert all paths in case some used ~ for home
+        outputDir = path(outputDir)
+        inputDir = path(inputDir)
+        cookies = path(cookies)
+        archivesDir = path(archivesDir)
+        downloaderExec = path(downloaderExec)
+        backupDirs = backupDirs.map { path(it) }
+
         if (!isDir(outputDir)) {
             if (!strictMode) {
                 logW("Output directory: $outputDir not found, creating $outputDir")
@@ -197,6 +212,10 @@ object ApplicationConfig : Config {
         //  multiple times if the backup took too long, just once, so it's more of a flag than a queue
 
         // TODO: 18-Jun-2022 @basshelal: Downloader args
+
+        """Config post-verification:
+           |${this.jsonify()}
+        """.trimMargin().logV()
 
         if (errors > 0) {
             logE("$errors unrecoverable errors occurred (some may be due to strict mode being enabled)" +

@@ -94,3 +94,16 @@ internal fun mkfl(path: String): Boolean = File(path).let {
 internal fun readDir(path: String): List<String> = File(path).let {
     it.listFiles()?.map { it.path }?.sorted() ?: emptyList()
 }
+
+internal fun path(path: String): String {
+    var result: String = path
+    if (result.startsWith("~")) {
+        System.getProperty("user.home")?.also { home ->
+            result = result.replaceFirst("~", home)
+        }
+    }
+    if (result.startsWith("./")) {
+        result = result.replaceFirst("./", "")
+    }
+    return result
+}

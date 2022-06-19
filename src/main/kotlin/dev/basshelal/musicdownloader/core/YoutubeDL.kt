@@ -106,15 +106,16 @@ private constructor(private val processBuilder: ProcessBuilder) {
         }
 
         fun update(exec: String) {
+            "YoutubeDL updating...".logV()
             YoutubeDL.builder().exec(exec).update().build().start().blockUntilCompletion()
         }
     }
 
     fun start(): YoutubeDL {
         if (process == null) {
-            "Starting process".logV()
+            "YoutubeDL starting process".logV()
             process = processBuilder.start()
-            infoString?.also { "Started process:\n\t$it".logV() }
+            infoString?.also { "YoutubeDL started process:\n\t$it".logV() }
         }
         return this
     }

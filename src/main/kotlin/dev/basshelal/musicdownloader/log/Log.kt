@@ -5,6 +5,7 @@ package dev.basshelal.musicdownloader.log
 import dev.basshelal.musicdownloader.core.AtomicValueDelegate
 import dev.basshelal.musicdownloader.core.addShutdownHook
 import dev.basshelal.musicdownloader.core.formattedLocalDateTime
+import dev.basshelal.musicdownloader.core.isFile
 import dev.basshelal.musicdownloader.core.println
 import java.io.BufferedWriter
 import java.io.File
@@ -13,7 +14,7 @@ import java.io.OutputStreamWriter
 
 object Log {
 
-    enum class Level { NONE, ERROR, WARN, DEBUG, INFO, VERBOSE }
+    enum class Level { ERROR, WARN, DEBUG, INFO, VERBOSE }
 
     public var level: Level by AtomicValueDelegate(Level.INFO)
 
@@ -29,9 +30,13 @@ object Log {
         addShutdownHook { Level.values().forEach { streams[it]?.forEach { it.close() } } }
     }
 
-    public fun addLogFile(level: Level?, filePath: String): Boolean {
+    public fun addLogFile(level: Level? = null, filePath: String): Boolean {
         val file = File(filePath)
-        if (!file.createNewFile()) return false
+        file.parentFile.mkdirs()
+        if (!file.createNewFile() || !isFile(filePath)) {
+            logE("Could not create log file: $filePath")
+            return false
+        }
         if (level == null) {
             val writer = FileOutputStream(file).bufferedWriter()
             Level.values().forEach { streams[it]?.also { it.add(writer) } ?: return false }

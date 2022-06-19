@@ -14,7 +14,7 @@ strict-mode: false
 # ==================
 
 # Output directory where music will be placed
-output-dir: "/home/bassam/music/"
+output-dir: "~/music/"
 
 # Input directory which contains files with the URLs to music
 input-dir:  "./urls/"
@@ -36,6 +36,9 @@ rescan-period: 360
 
 # ytdl executable, this should be recognizable and runnable from a shell
 executable: "./bin/yt-dlp"
+
+# Seconds to sleep between downloads
+sleep-seconds: 0
 
 # Additional args to pass to the downloader executable for more fine tune control
 downloader-args: ""
