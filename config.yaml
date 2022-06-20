@@ -43,6 +43,17 @@ sleep-seconds: 0
 # Additional args to pass to the downloader executable for more fine tune control
 downloader-args: ""
 
+# ===========
+# Log options
+# ===========
+
+# "Log verbosity, possible values are (case insensitive) :
+#  NONE (N, Q), ERROR (E), WARN (W), DEBUG (D), INFO (I), VERBOSE (V)
+log-level: INFO
+
+# Directory where log files will be placed
+log-dir: "~/music-manager/log/"
+
 # ===============
 # Storage options
 # ===============

@@ -5,7 +5,9 @@ import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.split
+import com.github.ajalt.clikt.parameters.types.choice
 import com.github.ajalt.clikt.parameters.types.int
+import com.github.ajalt.clikt.parameters.types.restrictTo
 import dev.basshelal.musicdownloader.core.boolean
 
 // Read docs here https://ajalt.github.io/clikt/parameters/#parameter-names
@@ -83,15 +85,42 @@ class CommandLineConfig : Config, CliktCommand(
             names = arrayOf("--backup-period")
     ).int()
 
-    // TODO: 18-Jun-2022 @basshelal: Implement and test
+    // TODO: 18-Jun-2022 @basshelal: Implement and test everything below
     override val downloaderArgs: String? by option(
             names = arrayOf("--downloader-args")
     )
 
+    val sleepSeconds: Int? by option(
+            names = arrayOf("--sleep-seconds"),
+            help = "Seconds to sleep between individual song downloads (and checks), defaults to 0"
+    ).int()
+
     val update: Boolean? by option(
             names = arrayOf("--update", "-U"),
-            help = "Update and restart"
+            help = "Update program and exit, needs manual restart"
     ).flag()
+
+    val logDir: String? by option(
+            names = arrayOf("--log-dir"),
+            help = "Directory containing log files, null for no log files"
+    )
+
+    val logLevel: String? by option(
+            names = arrayOf("--log-level"),
+            help = "Log verbosity, possible values are (case insensitive), " +
+                    "NONE (N, Q), ERROR (E), WARN (W), DEBUG (D), INFO (I), VERBOSE (V)"
+    ).choice(choices = arrayOf("NONE", "N", "Q", "ERROR", "E", "WARN", "W", "DEBUG", "D", "INFO", "I", "VERBOSE", "V"),
+            ignoreCase = true)
+
+    val quiet: Boolean? by option(
+            names = arrayOf("--quiet", "-q"),
+            help = "Alias for --log-level Q"
+    ).flag(secondaryNames = arrayOf("--no-quiet"))
+
+    val verbose: Boolean? by option(
+            names = arrayOf("--verbose", "-v"),
+            help = "Alias for --log-level V"
+    ).flag(secondaryNames = arrayOf("--no-verbose"))
 
     override fun run() = Unit
 }

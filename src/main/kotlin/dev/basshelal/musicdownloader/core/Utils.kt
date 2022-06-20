@@ -62,7 +62,11 @@ internal inline fun Thread.blockUntil(
 
 internal inline fun Int.hoursToMinutes(): Int = this * 60
 
-internal inline fun RawOption.boolean() = convert { java.lang.Boolean.valueOf(it) }
+internal inline fun RawOption.boolean(defaultValue: Boolean = false) = convert { optionString: String ->
+    if (listOf("t", "true", "1", "y", "yes").any { it.equals(optionString, ignoreCase = true) }) true
+    else if (listOf("f", "false", "0", "n", "no").any { it.equals(optionString, ignoreCase = true) }) false
+    else defaultValue
+}
 
 internal inline val now: LocalDateTime
     get() = LocalDateTime.now()

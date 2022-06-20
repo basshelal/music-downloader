@@ -6,6 +6,7 @@ import dev.basshelal.musicdownloader.core.formattedLocalDateTime
 import dev.basshelal.musicdownloader.core.path
 import dev.basshelal.musicdownloader.downloader.Downloader
 import dev.basshelal.musicdownloader.log.Log
+import dev.basshelal.musicdownloader.log.logI
 
 fun main(args: Array<String>) {
 
