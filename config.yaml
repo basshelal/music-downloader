@@ -14,19 +14,19 @@ strict-mode: false
 # ==================
 
 # Output directory where music will be placed
-output-dir: "~/music/"
+output-dir: "~/data/music-manager/music/"
 
 # Input directory which contains files with the URLs to music
-input-dir:  "./urls/"
+input-dir:  "~/data/music-manager/input/"
 
 # Audio formats to use, allowed formats are: m4a, mp3, flac, wav
 formats:  [ "m4a" ]
 
 # Cookies text file to download using authentication
-cookies: "./cookies/youtube-cookies.txt"
+cookies: "~/data/music-manager/youtube-cookies.txt"
 
 # Archives directory to keep track of downloaded music
-archives-dir: "./archives/"
+archives-dir: "~/data/music-manager/archives/"
 
 # Download rate limit in MB/s, 0 for no limit
 rate-limit: 0
@@ -52,7 +52,7 @@ backup-enabled: true
 
 # Backup location(s)
 backup-dirs:
-  - "~/backups/"
+  - "~/music-manager/backups/"
 
 # Backup period in minutes
 backup-period: 720

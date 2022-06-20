@@ -72,6 +72,11 @@ object ApplicationConfig : Config {
             }
         }
 
+        if (commandLineConfig.update == true) {
+            println("Update requested, re-start after update")
+            exit(69)
+        }
+
         configFile = File(commandLineConfig.configFilePath).also {
             if (!it.exists() || !it.isFile) {
                 logE("File ${commandLineConfig.configFilePath} does not exist, cannot proceed, exiting")

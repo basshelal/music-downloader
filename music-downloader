@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 
+echo "Starting, first run may take some time"
 if [[ -z "$*" ]]; then
-  ./gradlew music-downloader
+  ./gradlew build 1>/dev/null && java -classpath "$(./gradlew classpath)" dev.basshelal.musicdownloader.MainKt
 else
-  ./gradlew music-downloader --args="$*"
+  ./gradlew build 1>/dev/null && java -classpath "$(./gradlew classpath)" dev.basshelal.musicdownloader.MainKt "$@"
 fi
 
-# To run without Gradle
-# java -classpath "$(./gradlew classpath)" dev.basshelal.musicdownloader.MainKt
+if [[ $? -eq 69 ]]; then
+    git fetch
+    git pull
+fi

@@ -81,6 +81,7 @@ private constructor(private val processBuilder: ProcessBuilder) {
                         list.addAll(args.flatMap { listOf(it.key, it.value) })
                         url?.also { url -> list.add(url) }
                     })
+                    // TODO: 20-Jun-2022 @basshelal: Implement this so that log contains everything
                     // Output from ytdl doesn't pipe to output files yet, this was implemented at one point but was
                     // limited to one file per ytdl run, after every run the file would be re-written to
                     .redirectOutput(ProcessBuilder.Redirect.INHERIT)

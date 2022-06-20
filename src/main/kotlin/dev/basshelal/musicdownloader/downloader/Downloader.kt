@@ -7,14 +7,20 @@ import dev.basshelal.musicdownloader.core.QualityFormat
 import dev.basshelal.musicdownloader.core.ThumbnailFormat
 import dev.basshelal.musicdownloader.core.YoutubeDL
 import dev.basshelal.musicdownloader.core.addShutdownHook
+import dev.basshelal.musicdownloader.core.format
 import dev.basshelal.musicdownloader.core.isFile
 import dev.basshelal.musicdownloader.core.mkfl
+import dev.basshelal.musicdownloader.core.now
 import dev.basshelal.musicdownloader.core.readDir
 import dev.basshelal.musicdownloader.core.threads.LoopingThread
 import dev.basshelal.musicdownloader.log.logE
 import dev.basshelal.musicdownloader.log.logI
 import dev.basshelal.musicdownloader.log.logV
 import java.io.File
+import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
+import java.time.temporal.TemporalUnit
+import java.util.concurrent.TimeUnit
 
 object Downloader {
 
@@ -55,7 +61,7 @@ object Downloader {
                     }
                 }
 
-                val archiveFileName = ApplicationConfig.archivesDir + File.pathSeparator + inputFilePath
+                val archiveFileName = ApplicationConfig.archivesDir + File.separator + File(inputFilePath).name
                 if (!isFile(archiveFileName) && !mkfl(archiveFileName)) {
                     logE("Could not create archive file: ${archiveFileName}, " +
                             "it may already exist as a directory or its parent directory may have restricted write " +
@@ -74,8 +80,9 @@ object Downloader {
                 "Downloader finished YoutubeDL, restarting".logV()
             }
         }
-        "Sleeping...".logI()
-        Thread.sleep(1_000)
+        val timeToWake: LocalDateTime = now.plus(ApplicationConfig.rescanPeriod.toLong(), ChronoUnit.MINUTES)
+        "Downloading finished, sleeping until: ${timeToWake.format()}".logI()
+        Thread.sleep(ApplicationConfig.rescanPeriod * (60L * 1000L))
     }
 
     fun initialize() {

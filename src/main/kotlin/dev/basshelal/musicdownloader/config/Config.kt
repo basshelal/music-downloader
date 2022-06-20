@@ -1,6 +1,6 @@
 package dev.basshelal.musicdownloader.config
 
-// TODO: 17-Jun-2022 @basshelal: Add log level which should include ytdl verbosity
+// TODO: 17-Jun-2022 @basshelal: Add log level which should include ytdl verbosity and log file(s)?
 interface Config {
     val strictMode: Boolean?
     val outputDir: String?

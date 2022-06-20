@@ -57,7 +57,7 @@ object Log {
     public fun v(message: String) = log(Level.VERBOSE, message)
 
     public fun log(level: Level, message: String): Unit {
-        // TODO: 17-Jun-2022 @basshelal: Add colors
+        // TODO: 17-Jun-2022 @basshelal: Add colors, these should only be used on the console?
         val time: String = formattedLocalDateTime
         streams[level]?.forEach {
             if (level <= this.level)

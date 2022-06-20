@@ -62,11 +62,13 @@ class CommandLineConfig : Config, CliktCommand(
     ).int()
 
     override val rescanPeriod: Int? by option(
-            names = arrayOf("--rescan-period")
+            names = arrayOf("--rescan-period"),
+            help = "Minutes between checking (and downloading) new music"
     ).int()
 
     override val downloaderExec: String? by option(
-            names = arrayOf("--exec", "--ytdl", "--executable", "--exec")
+            names = arrayOf("--exec", "--ytdl", "--executable", "--exec"),
+            help = "Path to youtube-dl executable"
     )
 
     override val isBackupEnabled: Boolean? by option(
@@ -85,6 +87,11 @@ class CommandLineConfig : Config, CliktCommand(
     override val downloaderArgs: String? by option(
             names = arrayOf("--downloader-args")
     )
+
+    val update: Boolean? by option(
+            names = arrayOf("--update", "-U"),
+            help = "Update and restart"
+    ).flag()
 
     override fun run() = Unit
 }
