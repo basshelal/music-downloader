@@ -3,6 +3,7 @@ package dev.basshelal.musicdownloader.core
 import dev.basshelal.musicdownloader.config.ConfigDefaults
 import dev.basshelal.musicdownloader.log.logV
 import java.io.IOException
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * Wrapper around ytdl, only implements the required API
@@ -141,7 +142,7 @@ private constructor(private val processBuilder: ProcessBuilder) {
 
     val infoString: String?
         get() = process?.let { process ->
-            process.info()?.commandLine()?.get()?.let { commandLine ->
+            process.info()?.commandLine()?.orElse(null)?.let { commandLine ->
                 "[${process.pid()}] $commandLine"
             }
         }

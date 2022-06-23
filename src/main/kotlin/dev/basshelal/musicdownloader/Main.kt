@@ -22,7 +22,4 @@ fun main(args: Array<String>) {
 
     Downloader.start()
 
-    // TODO: 16-Jun-2022 @basshelal: Song data editor including tags such as Title Artist Album in addition to custom
-    //  tags
-
 }
