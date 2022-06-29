@@ -35,4 +35,5 @@ dependencies {
     implementation("com.charleskorn.kaml:kaml:0.43.0")
     implementation("com.github.ajalt.clikt:clikt:3.4.1")
     implementation("com.diogonunes:JColor:5.3.1")
+    implementation("com.google.code.gson:gson:2.9.0")
 }

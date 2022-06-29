@@ -13,14 +13,13 @@ import dev.basshelal.musicdownloader.core.mkfl
 import dev.basshelal.musicdownloader.core.now
 import dev.basshelal.musicdownloader.core.readDir
 import dev.basshelal.musicdownloader.core.threads.LoopingThread
+import dev.basshelal.musicdownloader.filesystem.updater.ApplicationUpdater
 import dev.basshelal.musicdownloader.log.logE
 import dev.basshelal.musicdownloader.log.logI
 import dev.basshelal.musicdownloader.log.logV
 import java.io.File
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
-import java.time.temporal.TemporalUnit
-import java.util.concurrent.TimeUnit
 
 object Downloader {
 
@@ -28,6 +27,13 @@ object Downloader {
     private var youtubeDL: YoutubeDL by LateInit()
 
     private val thread = LoopingThread {
+        "Checking for music-downloader updates".logV()
+
+        if (ApplicationUpdater.isUpdateAvailable()) {
+            "An update is available, updating and restarting".logI()
+            ApplicationUpdater.exitToUpdate()
+        }
+
         // Add default common options first
         builder = YoutubeDL.builder()
                 .exec(ApplicationConfig.downloaderExec)

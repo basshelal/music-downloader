@@ -16,6 +16,7 @@ import dev.basshelal.musicdownloader.core.isFile
 import dev.basshelal.musicdownloader.core.mkdirs
 import dev.basshelal.musicdownloader.core.mkfl
 import dev.basshelal.musicdownloader.core.path
+import dev.basshelal.musicdownloader.filesystem.updater.ApplicationUpdater
 import dev.basshelal.musicdownloader.log.logE
 import dev.basshelal.musicdownloader.log.logV
 import dev.basshelal.musicdownloader.log.logW
@@ -74,7 +75,7 @@ object ApplicationConfig : Config {
 
         if (commandLineConfig.update == true) {
             println("Update requested, re-start after update")
-            exit(69)
+            ApplicationUpdater.exitToUpdate()
         }
 
         configFile = File(commandLineConfig.configFilePath).also {

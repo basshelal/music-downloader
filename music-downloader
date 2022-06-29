@@ -1,13 +1,22 @@
 #!/usr/bin/env bash
 
-echo "Starting, first run may take some time"
-if [[ -z "$*" ]]; then
-  ./gradlew build 1>/dev/null && java -classpath "$(./gradlew classpath)" dev.basshelal.musicdownloader.MainKt
-else
-  ./gradlew build 1>/dev/null && java -classpath "$(./gradlew classpath)" dev.basshelal.musicdownloader.MainKt "$@"
-fi
+run() {
+  echo "Starting, first run may take some time"
+  if [[ -z "$*" ]]; then
+    ./gradlew build 1>/dev/null && java -classpath "$(./gradlew classpath)" dev.basshelal.musicdownloader.MainKt
+  else
+    ./gradlew build 1>/dev/null && java -classpath "$(./gradlew classpath)" dev.basshelal.musicdownloader.MainKt "$@"
+  fi
+}
 
-if [[ $? -eq 69 ]]; then
+checkUpdate() {
+  if [[ $? -eq 69 ]]; then
     git fetch
     git pull
-fi
+  fi
+}
+
+while true; do
+run "$*"
+checkUpdate
+done
